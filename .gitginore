@@ -1,0 +1,29 @@
+# Node.js / JavaScript
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+env/
+venv/
+.venv/
+
+# IDE / Editor
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# System
+.DS_Store
+Thumbs.db
+
+# Secrets / Credentials
+.env
+*.secret.json
