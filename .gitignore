@@ -27,3 +27,4 @@ Thumbs.db
 # Secrets / Credentials
 .env
 *.secret.json
+spotify_token.json
