@@ -1,5 +1,5 @@
 {
-  "name": "pitchfork-newsletter-2-spotify-playlist",
+  "name": "pitch2play",
   "version": "1.0.0",
   "description": "Automatically creates Spotify playlists from Pitchfork's '10 Best Reviewed Albums of the Week' newsletter emails",
   "main": "pitchfork_spotify_playlist.mjs",
@@ -19,16 +19,16 @@
     "email",
     "imap"
   ],
-  "author": "Joel Debeljak",
+  "author": "Sokkohai",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/pitchfork-newsletter-2-spotify-playlist.git"
+    "url": "https://github.com/sokkohai/pitchfork-newsletter-2-spotify-playlist.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/pitchfork-newsletter-2-spotify-playlist/issues"
+    "url": "https://github.com/sokkohai/pitchfork-newsletter-2-spotify-playlist/issues"
   },
-  "homepage": "https://github.com/yourusername/pitchfork-newsletter-2-spotify-playlist#readme",
+  "homepage": "https://github.com/sokkohai/pitchfork-newsletter-2-spotify-playlist#readme",
   "engines": {
     "node": ">=16.0.0"
   },
