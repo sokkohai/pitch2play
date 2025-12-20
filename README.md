@@ -23,8 +23,8 @@ Automatically creates Spotify playlists from Pitchfork's "10 Best Reviewed Album
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/sokkohai/pitchfork-newsletter-2-spotify-playlist.git
-   cd pitchfork-newsletter-2-spotify-playlist
+   git clone https://github.com/sokkohai/pitch2play.git
+   cd pitch2play
    ```
 
 2. **Install dependencies**
