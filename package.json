@@ -2,12 +2,22 @@
   "name": "pitch2play",
   "version": "1.0.0",
   "description": "Automatically creates Spotify playlists from Pitchfork's '10 Best Reviewed Albums of the Week' newsletter emails",
-  "main": "pitchfork_spotify_playlist.mjs",
+  "main": "src/index.mjs",
   "type": "module",
+  "bin": {
+    "pitch2play": "./bin/pitch2play"
+  },
   "scripts": {
-    "start": "node pitchfork_spotify_playlist.mjs",
-    "auth": "node pitchfork_spotify_playlist.mjs --auth",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/index.mjs",
+    "auth": "node src/index.mjs --auth",
+    "trash-move": "node src/index.mjs trash-move",
+    "deduplicate": "node scripts/sync-album-tracks.mjs",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage",
+    "test:watch": "vitest --watch",
+    "lint": "eslint src tests scripts",
+    "lint:fix": "eslint src tests scripts --fix",
+    "format": "prettier --write \"src/**/*.{mjs,js}\" \"tests/**/*.{mjs,js}\" \"scripts/**/*.{mjs,js}\""
   },
   "keywords": [
     "pitchfork",
@@ -38,5 +48,10 @@
     "node-fetch": "^3.3.2",
     "node-imap": "^0.9.6",
     "simple-oauth2": "^5.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.55.0",
+    "prettier": "^3.1.1",
+    "vitest": "^1.0.0"
   }
 }

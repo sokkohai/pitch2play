@@ -32,7 +32,19 @@ Automatically creates Spotify playlists from Pitchfork's "10 Best Reviewed Album
    npm install
    ```
 
-3. **Set up environment variables**
+3. **Install globally (optional)**
+   
+   To use the `pitch2play` command from anywhere:
+   ```bash
+   npm install -g ./
+   ```
+   
+   Or if you're in the project directory:
+   ```bash
+   npm link
+   ```
+
+4. **Set up environment variables**
    ```bash
    cp env.example .env
    ```
@@ -49,9 +61,9 @@ Automatically creates Spotify playlists from Pitchfork's "10 Best Reviewed Album
    SPOTIFY_CLIENT_ID=your-spotify-client-id
    SPOTIFY_CLIENT_SECRET=your-spotify-client-secret
    SPOTIFY_REDIRECT_URI=http://localhost:3000/callback
-   ```
+    ```
 
-4. **Set up Spotify OAuth**
+5. **Set up Spotify OAuth**
    ```bash
    npm run auth
    ```
@@ -60,15 +72,32 @@ Automatically creates Spotify playlists from Pitchfork's "10 Best Reviewed Album
 
 ### Usage
 
-**Run the playlist creator:**
+After installation, you can use the `pitch2play` command from anywhere in your terminal:
+
+**Create Spotify playlists from Pitchfork emails (default):**
 ```bash
-npm start
+pitch2play
 ```
 
-**Manual authorization (if needed):**
+**Set up Spotify OAuth:**
 ```bash
-npm run auth
+pitch2play auth
 ```
+
+**Move emails to trash:**
+```bash
+pitch2play trash-move --uids 130,131
+pitch2play trash-move --uids 130,131 --dry-run  # Preview only
+```
+
+**Alternatively, use npm scripts from the project directory:**
+```bash
+npm start              # Create playlists
+npm run auth           # Authenticate with Spotify
+npm run trash-move -- --uids 130,131  # Move emails
+```
+
+See [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) for architecture details and [docs/RULES.md](docs/RULES.md) for standards.
 
 ## 📧 Email Setup
 

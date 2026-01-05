@@ -1,0 +1,11 @@
+#!/bin/bash
+set -e
+
+# Get the real directory of this script (resolves symlinks)
+REAL_PATH="$(readlink -f "$0")"
+SCRIPT_DIR="$(dirname "$REAL_PATH")"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+
+# Execute from the project directory
+cd "$PROJECT_ROOT"
+exec node ./src/index.mjs "$@"
