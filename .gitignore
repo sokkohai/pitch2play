@@ -28,3 +28,7 @@ Thumbs.db
 .env
 *.secret.json
 spotify_token.json
+
+# Crontab (personal scheduling, contains local paths)
+crontab
+cron.log

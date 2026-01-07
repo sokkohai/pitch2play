@@ -1,0 +1,25 @@
+# Pitch2Play Crontab Schedule Example
+# Run pitch2play every Sunday at 12:00 PM
+# 
+# To use this:
+# 1. Copy this file: cp crontab.example crontab
+# 2. Update the paths to match your setup
+# 3. Install to crontab: crontab crontab
+# 4. Verify: crontab -l
+
+# Min  Hour  Day   Month DayOfWeek Command
+# |    |     |     |     |
+# |    |     |     |     +-- Sunday = 0, Monday = 1, ..., Saturday = 6
+# |    |     |     +-- Month (1-12)
+# |    |     +-- Day (1-31)
+# |    +-- Hour (0-23)
+# +-- Minute (0-59)
+
+# Run every Sunday at 12:00 PM
+0 12 * * 0 cd /path/to/pitch2play && npm start >> /path/to/pitch2play/cron.log 2>&1
+
+# Alternative: Run every day at 8:00 AM
+# 0 8 * * * cd /path/to/pitch2play && npm start >> /path/to/pitch2play/cron.log 2>&1
+
+# Alternative: Run every 6 hours
+# 0 */6 * * * cd /path/to/pitch2play && npm start >> /path/to/pitch2play/cron.log 2>&1
