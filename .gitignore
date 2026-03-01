@@ -4,6 +4,18 @@ npm-debug.log
 yarn-error.log
 package-lock.json
 yarn.lock
+.npm/
+.yarn/
+
+# Build and dist directories
+dist/
+build/
+.cache/
+coverage/
+
+# Test cache
+.vitest/
+.jest_cache/
 
 # Python
 __pycache__/
@@ -19,15 +31,31 @@ venv/
 .idea/
 *.sublime-project
 *.sublime-workspace
+*.swp
+*.swo
+*~
 
 # System
 .DS_Store
+.DS_Store?
+._*
+.AppleDouble
+.AppleDB
+.apdisk
 Thumbs.db
 
 # Secrets / Credentials
 .env
+.env.local
+.env.*.local
 *.secret.json
 spotify_token.json
+
+# Logs
+logs/
+*.log
+*.log.*
+lerna-debug.log*
 
 # Crontab (personal scheduling, contains local paths)
 crontab
