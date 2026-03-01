@@ -5,7 +5,7 @@
  * Uses UID MOVE if supported, otherwise falls back to COPY + mark \Deleted + EXPUNGE.
  */
 
-import Imap from 'imap';
+import Imap from 'node-imap';
 import logger from '../../logger.mjs';
 
 const DEFAULT_HOST = 'imap.mail.me.com';

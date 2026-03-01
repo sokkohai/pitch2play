@@ -4,7 +4,7 @@
  * Handles email retrieval via IMAP connection.
  */
 
-import Imap from 'imap';
+import Imap from 'node-imap';
 import logger from '../../logger.mjs';
 import { decodeMimeEncodedWords } from '../../utils/text.mjs';
 

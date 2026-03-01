@@ -4,50 +4,33 @@
  */
 
 /**
- * Strips HTML tags from a string and decodes HTML entities.
- * @param {string} input - HTML string
- * @returns {string} Plain text
- */
-export function stripHtml(input) {
-  if (!input) return '';
-
-  let text = input;
-
-  // Remove style and script blocks
-  text = text.replace(/<style[\s\S]*?<\/style>/gi, '');
-  text = text.replace(/<script[\s\S]*?<\/script>/gi, '');
-
-  // Remove HTML tags
-  text = text.replace(/<[^>]+>/g, ' ');
-
-  // Decode HTML entities
-  text = decodeHtmlEntities(text);
-
-  // Normalize whitespace
-  return text.replace(/\s+/g, ' ').trim();
-}
-
-/**
- * Decodes common HTML entities.
- * @param {string} text - Text with HTML entities
+ * Decodes Quoted-Printable encoded text (used in MIME email bodies).
+ * Handles sequences like =E2=80=9C (UTF-8) and =\n (soft line breaks).
+ * @param {string} text - Quoted-Printable encoded text
  * @returns {string} Decoded text
  */
-export function decodeHtmlEntities(text) {
-  const entities = {
-    '&nbsp;': ' ',
-    '&amp;': '&',
-    '&quot;': '"',
-    '&#39;': "'",
-    '&lt;': '<',
-    '&gt;': '>',
-  };
+export function decodeQuotedPrintable(text) {
+  if (!text) return '';
 
-  let result = text;
-  for (const [entity, char] of Object.entries(entities)) {
-    result = result.replaceAll(entity, char);
+  // Remove soft line breaks (=\n)
+  let decoded = text.replace(/=\r?\n/g, '');
+
+  // Decode hex sequences (=HH) as UTF-8 bytes
+  const bytes = [];
+  for (let i = 0; i < decoded.length; i++) {
+    if (decoded[i] === '=' && i + 2 < decoded.length) {
+      const hex = decoded.substring(i + 1, i + 3);
+      if (/^[0-9A-Fa-f]{2}$/.test(hex)) {
+        bytes.push(parseInt(hex, 16));
+        i += 2;
+        continue;
+      }
+    }
+    bytes.push(decoded.charCodeAt(i));
   }
 
-  return result;
+  // Convert bytes to UTF-8 string
+  return Buffer.from(bytes).toString('utf8');
 }
 
 /**
@@ -104,4 +87,14 @@ export function truncate(str, maxLength, suffix = '...') {
   }
 
   return str.slice(0, maxLength - suffix.length) + suffix;
+}
+
+/**
+ * Strips HTML tags from a string.
+ * @param {string} str - String with HTML
+ * @returns {string} Plain text string
+ */
+export function stripHtml(str) {
+  if (!str) return '';
+  return str.replace(/<[^>]*>/g, '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ').trim();
 }

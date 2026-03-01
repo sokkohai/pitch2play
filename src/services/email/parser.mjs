@@ -5,6 +5,7 @@
  */
 
 import { load as loadHtml } from 'cheerio';
+import { decodeQuotedPrintable } from '../../utils/text.mjs';
 import logger from '../../logger.mjs';
 
 /**
@@ -16,8 +17,16 @@ export function extractAlbumArtistPairs(rawBody) {
   const pairs = [];
 
   const addPair = (artist, album) => {
-    const a = (artist || '').trim();
-    const b = (album || '').trim();
+    let a = (artist || '').trim();
+    let b = (album || '').trim();
+    
+    // Decode Quoted-Printable encoded text
+    a = decodeQuotedPrintable(a);
+    b = decodeQuotedPrintable(b);
+    
+    a = a.trim();
+    b = b.trim();
+    
     if (!a || !b || a.length < 2 || b.length < 2) return;
     const key = `${a.toLowerCase()}::${b.toLowerCase()}`;
     if (!pairs.some((p) => `${p.artist.toLowerCase()}::${p.album.toLowerCase()}` === key)) {
@@ -85,8 +94,13 @@ export function extractAlbumArtistPairs(rawBody) {
       const pat = /^(.{2,80})\s*[:–-]\s*(.{2,140})$/;
       $('img[alt], img[title]').each((_, img) => {
         if (pairs.length >= 10) return;
-        const alt = ($(img).attr('alt') || '').trim();
-        const title = ($(img).attr('title') || '').trim();
+        let alt = ($(img).attr('alt') || '').trim();
+        let title = ($(img).attr('title') || '').trim();
+        
+        // Decode Quoted-Printable encoded attributes
+        alt = decodeQuotedPrintable(alt);
+        title = decodeQuotedPrintable(title);
+        
         const candidates = [alt, title].filter(Boolean);
         for (const txt of candidates) {
           const m = txt.match(pat);

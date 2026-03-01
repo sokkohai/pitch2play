@@ -30,11 +30,20 @@ async function _spotifyRequest(method, url, accessToken, body = null) {
 
   if (body) {
     options.body = JSON.stringify(body);
+    logger.debug('Spotify request body', { body, bodyString: options.body });
   }
 
   const res = await fetch(url, options);
   if (!res.ok) {
     const error = await res.text();
+    logger.warn('Spotify API error', { 
+      status: res.status, 
+      url, 
+      method, 
+      error: error.substring(0, 200),
+      tokenLength: accessToken ? accessToken.length : 0,
+      body: typeof body === 'object' ? JSON.stringify(body) : body
+    });
     throw new Error(`Spotify API error (${res.status}): ${error}`);
   }
 
@@ -183,45 +192,62 @@ export async function searchAlbum(accessToken, album, artist) {
   const cleanAlbum = stripHtml(album).toLowerCase().trim();
   const cleanArtist = stripHtml(artist).toLowerCase().trim();
 
+  // Build search candidates with progressively looser criteria
   const candidates = [
+    // 1. Full album + artist
     { album: cleanAlbum, artist: cleanArtist, weight: 1 },
+    // 2. Album only
     { album: cleanAlbum, artist: null, weight: 2 },
-    { album: cleanAlbum.split(/\s+/)[0], artist: cleanArtist, weight: 3 },
+    // 3. First few words of album + artist
+    { album: cleanAlbum.split(/\s+/).slice(0, 3).join(' '), artist: cleanArtist, weight: 3 },
+    // 4. First word of album + artist
+    { album: cleanAlbum.split(/\s+/)[0], artist: cleanArtist, weight: 4 },
+    // 5. Artist search (fallback)
+    { album: null, artist: cleanArtist, weight: 5 },
   ];
 
   for (const { album: a, artist: ar } of candidates) {
-    let q = `album:"${a}"`;
-    if (ar) q += ` artist:"${ar}"`;
+    if (!a && !ar) continue; // Skip empty searches
+    
+    let q = '';
+    if (a) q += `album:"${a}"`;
+    if (ar) {
+      if (q) q += ' ';
+      q += `artist:"${ar}"`;
+    }
 
     // Truncate if too long
     if (q.length > 250) {
-      const match = q.match(/album:"([^"]*)"/);
-      if (match) {
-        const currentAlbum = match[1];
+      if (a) {
         const overflow = q.length - 250;
-        const targetLen = Math.max(10, currentAlbum.length - overflow - 5);
-        const albumQuoted = `album:"${currentAlbum}"`;
-        const reduced = currentAlbum.substring(0, targetLen);
-        q = q.replace(albumQuoted, `album:"${reduced}"`);
+        const targetLen = Math.max(10, a.length - overflow - 10);
+        const reduced = a.substring(0, targetLen);
+        q = q.replace(`album:"${a}"`, `album:"${reduced}"`);
       }
       if (q.length > 230) {
         q = q.substring(0, 230);
       }
     }
 
-    const url = `https://api.spotify.com/v1/search?type=album&limit=5&q=${encodeURIComponent(q)}`;
+    const url = `https://api.spotify.com/v1/search?type=album&limit=10&q=${encodeURIComponent(q)}`;
     try {
       const data = await _spotifyRequest('GET', url, accessToken);
       if (data.albums?.items?.length > 0) {
-        const exact = data.albums.items.find((a) =>
-          a.name?.toLowerCase().includes(cleanAlbum.toLowerCase()) &&
-          a.artists?.some((ar) => ar.name?.toLowerCase().includes(cleanArtist.toLowerCase()))
-        );
-        return exact || data.albums.items[0];
+        // For full searches, look for exact match
+        if (a && ar) {
+          const exact = data.albums.items.find((album) =>
+            album.name?.toLowerCase().includes(cleanAlbum.toLowerCase()) &&
+            album.artists?.some((artist) => artist.name?.toLowerCase().includes(cleanArtist.toLowerCase()))
+          );
+          if (exact) return exact;
+        }
+        
+        // Otherwise return first result
+        return data.albums.items[0];
       }
     } catch (e) {
       if (!/maximum length of 250/i.test(String(e?.message))) {
-        logger.warn('Album search failed', { album, artist, error: e.message });
+        logger.warn('Album search failed', { album: a, artist: ar, error: e.message });
       }
       continue;
     }

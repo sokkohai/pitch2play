@@ -11,13 +11,12 @@
     "start": "node src/index.mjs",
     "auth": "node src/index.mjs --auth",
     "trash-move": "node src/index.mjs trash-move",
-    "deduplicate": "node scripts/sync-album-tracks.mjs",
     "test": "vitest",
     "test:coverage": "vitest --coverage",
     "test:watch": "vitest --watch",
-    "lint": "eslint src tests scripts",
-    "lint:fix": "eslint src tests scripts --fix",
-    "format": "prettier --write \"src/**/*.{mjs,js}\" \"tests/**/*.{mjs,js}\" \"scripts/**/*.{mjs,js}\""
+    "lint": "eslint src tests",
+    "lint:fix": "eslint src tests --fix",
+    "format": "prettier --write \"src/**/*.{mjs,js}\" \"tests/**/*.{mjs,js}\""
   },
   "keywords": [
     "pitchfork",

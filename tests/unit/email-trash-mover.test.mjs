@@ -92,6 +92,7 @@ describe('email-trash-mover', () => {
 
   describe('moveUidsToTrash', () => {
     it('should move UIDs to trash folder', async () => {
+      mockImap.serverCapabilities = ['MOVE'];
       mockImap.list = vi.fn().mockImplementation((cb) => {
         cb(null, [Buffer.from('(\\Trash) "/" "Deleted Messages"')]);
       });

@@ -5,6 +5,7 @@
  */
 
 import logger from '../../logger.mjs';
+import { validateConfig } from '../../config.mjs';
 import { fetchAllMatchingEmails, moveEmailToTrash } from '../email/fetch.mjs';
 import { extractAlbumArtistPairs } from '../email/parser.mjs';
 import {
@@ -31,11 +32,7 @@ const REPO_URL = 'https://github.com/sokkohai/pitch2play';
 export async function syncPlaylistsFromEmails() {
   try {
     logger.info('Validating configuration...');
-    const required = ['EMAIL_USER', 'EMAIL_PASS', 'SPOTIFY_CLIENT_ID', 'SPOTIFY_CLIENT_SECRET', 'SPOTIFY_REDIRECT_URI'];
-    const missing = required.filter((k) => !process.env[k]);
-    if (missing.length > 0) {
-      throw new Error(`Missing required env vars: ${missing.join(', ')}`);
-    }
+    validateConfig();
 
     const refreshToken = loadRefreshToken();
     if (!refreshToken) {
@@ -94,7 +91,7 @@ export async function syncPlaylistsFromEmails() {
       let playlist = await findPlaylistByName(accessToken, playlistName);
 
       if (!playlist) {
-        const description = `Pitchfork's Best Reviewed Albums of ${monthStr}\n\n${REPO_URL}`;
+        const description = `Pitchfork's Best Reviewed Albums of ${monthStr} - ${REPO_URL}`;
         playlist = await createPlaylist(accessToken, userId, playlistName, description);
         logger.info('Playlist created', { name: playlist.name });
       } else {
@@ -151,7 +148,7 @@ export async function syncPlaylistsFromEmails() {
 
     logger.info('Playlist sync completed successfully');
   } catch (err) {
-    logger.error('Playlist sync failed', { error: err.message });
+    logger.error('Playlist sync failed', { error: err.message, stack: err.stack });
     throw err;
   }
 }

@@ -6,13 +6,12 @@
 
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import fetch from 'node-fetch';
 import { AuthorizationCode } from 'simple-oauth2';
 import http from 'http';
 import { URL } from 'url';
 import logger from '../../logger.mjs';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const TOKEN_STORE_PATH = path.resolve(process.cwd(), 'spotify_token.json');
 
 const SPOTIFY_SCOPES = [
@@ -28,23 +27,32 @@ const SPOTIFY_SCOPES = [
  * @throws {Error} If refresh fails
  */
 export async function getAccessTokenFromRefresh(refreshToken) {
-  const oauth2Client = new AuthorizationCode({
-    client: {
-      id: process.env.SPOTIFY_CLIENT_ID,
-      secret: process.env.SPOTIFY_CLIENT_SECRET,
-    },
-    auth: {
-      tokenHost: 'https://accounts.spotify.com',
-      tokenPath: '/api/token',
-    },
-  });
-
+  const clientId = process.env.SPOTIFY_CLIENT_ID;
+  const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
+  
+  // Use basic auth encoding
+  const auth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+  
   try {
-    const token = await oauth2Client.getToken({
-      grant_type: 'refresh_token',
-      refresh_token: refreshToken,
+    const response = await fetch('https://accounts.spotify.com/api/token', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Basic ${auth}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        grant_type: 'refresh_token',
+        refresh_token: refreshToken,
+      }).toString(),
     });
-    return token.token.access_token;
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`Spotify token refresh failed (${response.status}): ${error}`);
+    }
+
+    const data = await response.json();
+    return data.access_token;
   } catch (err) {
     throw new Error(`Failed to refresh access token: ${err.message}`);
   }
